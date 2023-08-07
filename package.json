@@ -24,6 +24,7 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
+    "encoding": "^0.1.13",
     "eslint-config-prettier": "^8.9.0",
     "prettier": "3.0.0"
   }
