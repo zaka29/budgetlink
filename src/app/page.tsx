@@ -32,7 +32,6 @@ export async function getTotalExpenseCellData() {
   });
   // @ts-ignore
   const [title, content] = response?.data?.values[0];
-  console.log(title, content);
 
   return {
     sheets: {
