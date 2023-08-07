@@ -27,6 +27,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
     } catch (e) {
       throw new Error("something did not work");
     } finally {
+      setExpense("0.00");
       setLoading(false);
       router.refresh();
     }
@@ -39,13 +40,15 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
           label="Add expense"
           name="addtototal"
           onChangeFn={setExpense}
+          defaultValue={total}
+          loading={loading}
         />
         <div className="mt-2">
           <button
             disabled={loading}
             type="button"
             onClick={postData}
-            className="rounded border border-blue-700 p-2 bg-blue-950 hover:bg-blue-900 text-sm text-blue-500"
+            className="rounded h-[56px] bg-[#497236] hover:bg-[#4B952A] active:bg-[#4B952A] text-[#EDEDED] absolute bottom-20 left-6 right-6"
           >
             {loading ? "Adding" : "Add"} expense
           </button>

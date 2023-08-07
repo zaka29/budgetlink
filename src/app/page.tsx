@@ -41,12 +41,9 @@ export default async function Page() {
   } = await getTotalExpenseCellData();
 
   return (
-    <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-      <div className="pb-8">
-        <p className="pb-4">Total groceries:</p>
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          <code className="font-mono font-bold"> {title ? title : "n/a"}</code>
-        </p>
+    <main className="mx-auto max-w-7xl py-6 px-6 h-screen relative">
+      <div className="mb-16 p-5 bg-cyan-950 border rounded border-cyan-700 font-bold">
+        BUDGETLINK
       </div>
       <div>
         <AddToSpreadsheet total={title} />
