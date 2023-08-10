@@ -1,6 +1,6 @@
 "use client";
 import { LabelInput } from "@/components/ui/LabelInput";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export const AddToSpreadsheet = ({ total }: { total?: string }) => {
@@ -8,10 +8,10 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   const router = useRouter();
   const [expense, setExpense] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const postData = async () => {
-    console.log("post total ", Number(currentTotal) + Number(expense));
-    const path = "/api/sheets";
+    const path = "/api/sheets?path=/";
     if (Number.isNaN(expense)) {
       return;
     }
@@ -27,9 +27,11 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
     } catch (e) {
       throw new Error("something did not work");
     } finally {
-      setExpense("0.00");
       setLoading(false);
-      router.refresh();
+      startTransition(() => {
+        console.log("router refresh working");
+        router.refresh();
+      });
     }
   };
 

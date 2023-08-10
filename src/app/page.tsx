@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import { AddToSpreadsheet } from "@/components/AddToSpreadsheet";
 
+export const dynamic = "force-dynamic";
 export async function getSheets() {
   try {
     const auth = await google.auth.getClient({
