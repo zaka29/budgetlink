@@ -7,12 +7,14 @@ export const LabelInput = ({
   label,
   name,
   defaultValue,
+  value,
   onChangeFn,
   loading,
 }: {
   label: string;
   name: string;
   defaultValue?: string;
+  value?: string;
   loading?: boolean;
   onChangeFn: (event: string) => void;
 }) => {
@@ -43,6 +45,7 @@ export const LabelInput = ({
           autoComplete="off"
           className="rounded border border-[#2C305B] text-sm text-[7C7E96] bg-[#1A1E43] pl-6 pr-4 w-full h-[56px] focus:outline-none"
           disabled={loading}
+          value={value}
         />
       </div>
     </div>

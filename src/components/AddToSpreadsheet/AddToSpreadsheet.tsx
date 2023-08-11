@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   const currentTotal = total || 0;
   const router = useRouter();
-  const [expense, setExpense] = useState("");
+  const [expense, setExpense] = useState("0.00");
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -20,7 +20,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
       const response = await fetch(path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: `${Number(currentTotal) + Number(expense)}`,
+        body: `=${total}+${expense}`,
       });
       const result = await response.json();
       console.log("post result", result);
@@ -28,8 +28,8 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
       throw new Error("something did not work");
     } finally {
       setLoading(false);
+      setExpense("0.00");
       startTransition(() => {
-        console.log("router refresh working");
         router.refresh();
       });
     }
@@ -43,6 +43,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
           name="addtototal"
           onChangeFn={setExpense}
           defaultValue={total}
+          value={expense}
           loading={loading}
         />
         <div className="mt-2">

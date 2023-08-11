@@ -4,13 +4,13 @@ import { revalidatePath } from "next/cache";
 
 export async function POST(request: NextRequest) {
   const range = `15jul-15Aug'23!M4`;
-  const path = request.nextUrl.searchParams.get("path");
+  // const path = request.nextUrl.searchParams.get("path");
 
   try {
     const res = await request.text();
     const sheets = await getSheets();
     await sheets.spreadsheets.values.update({
-      valueInputOption: "RAW",
+      valueInputOption: "USER_ENTERED",
       spreadsheetId: process.env.SHEET_ID,
       range,
       requestBody: {
@@ -21,14 +21,14 @@ export async function POST(request: NextRequest) {
     throw new Error(`could not update sheets: ${e}`);
   }
 
-  if (!path) {
-    return NextResponse.json(
-      { message: "Missing path param" },
-      { status: 400 },
-    );
-  }
+  // if (!path) {
+  //   return NextResponse.json(
+  //     { message: "Missing path param" },
+  //     { status: 400 },
+  //   );
+  // }
 
-  revalidatePath(path);
+  // revalidatePath(path);
   return NextResponse.json({ test: "success" });
 }
 
