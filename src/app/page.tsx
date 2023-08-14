@@ -1,7 +1,8 @@
 import { google } from "googleapis";
 import { AddToSpreadsheet } from "@/components/AddToSpreadsheet";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
+
 export async function getSheets() {
   try {
     const auth = await google.auth.getClient({
@@ -22,30 +23,28 @@ export async function getSheets() {
   }
 }
 
-export async function getTotalExpenseCellData() {
-  // Auth
-  const sheets = await getSheets();
-  const range = `15jul-15Aug'23!M4`;
-  // ("https://docs.google.com/spreadsheets/d/130GzlQ4vn3ZCAmgPVn0dLCbgBqYaLU5lU6DCDXPdO4c/edit#gid=1859685028&range=L4");
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.SHEET_ID,
-    range,
-  });
-  // @ts-ignore
-  const [title, content] = response?.data?.values[0];
-
-  return {
-    sheets: {
-      title,
-      content,
-    },
-  };
+export async function getExpenseTotal() {
+  const base = process.env.API_BASE;
+  const path = "/api/sheets";
+  try {
+    const response = await fetch(`${base}${path}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const result = await response.json();
+    if (result.message.includes("Error")) {
+      throw new Error(result.message);
+    }
+    return result;
+  } catch (e) {
+    throw new Error(`something did not work: ${e}`);
+  }
 }
 
 export default async function Page() {
   const {
     sheets: { title },
-  } = await getTotalExpenseCellData();
+  } = await getExpenseTotal();
 
   return (
     <main className="mx-auto max-w-7xl py-6 px-6 h-screen relative">

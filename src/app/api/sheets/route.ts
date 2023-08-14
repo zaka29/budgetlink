@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 export async function POST(request: NextRequest) {
   const range = `15jul-15Aug'23!M4`;
-  // const path = request.nextUrl.searchParams.get("path");
+  let error = null;
 
   try {
     const res = await request.text();
@@ -18,18 +18,12 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (e) {
-    throw new Error(`could not update sheets: ${e}`);
+    return NextResponse.json({
+      message: `Error updating spread sheet: ${error}`,
+    });
   }
 
-  // if (!path) {
-  //   return NextResponse.json(
-  //     { message: "Missing path param" },
-  //     { status: 400 },
-  //   );
-  // }
-
-  // revalidatePath(path);
-  return NextResponse.json({ test: "success" });
+  return NextResponse.json({ message: "success" });
 }
 
 export async function GET(request: NextRequest) {
@@ -56,6 +50,7 @@ export async function GET(request: NextRequest) {
   const [title, content] = response.data.values[0];
 
   return NextResponse.json({
+    message: "Success",
     sheets: {
       title,
       content,

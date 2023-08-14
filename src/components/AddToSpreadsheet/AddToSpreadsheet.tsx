@@ -1,17 +1,36 @@
 "use client";
 import { LabelInput } from "@/components/ui/LabelInput";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export const AddToSpreadsheet = ({ total }: { total?: string }) => {
-  const currentTotal = total || 0;
+  const currentTotal = total || "0.00";
   const router = useRouter();
   const [expense, setExpense] = useState("0.00");
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const getExpenseTotal = async () => {
+    const base = "http://localhost:3000";
+    const path = "/api/sheets";
+    try {
+      const response = await fetch(path, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const result = await response.json();
+      console.log("result ", result);
+      if (result.message.includes("Error")) {
+        throw new Error(result.message);
+      }
+      return result;
+    } catch (e) {
+      throw new Error(`something did not work: ${e}`);
+    }
+  };
+
   const postData = async () => {
-    const path = "/api/sheets?path=/";
+    const path = "/api/sheets";
     if (Number.isNaN(expense)) {
       return;
     }
@@ -23,9 +42,11 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
         body: `=${total}+${expense}`,
       });
       const result = await response.json();
-      console.log("post result", result);
+      if (result.message.includes("Error")) {
+        throw new Error(result.message);
+      }
     } catch (e) {
-      throw new Error("something did not work");
+      throw new Error(`something did not work: ${e}`);
     } finally {
       setLoading(false);
       setExpense("0.00");
@@ -42,7 +63,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
           label="Add expense"
           name="addtototal"
           onChangeFn={setExpense}
-          defaultValue={total}
+          defaultValue={currentTotal}
           value={expense}
           loading={loading}
         />
