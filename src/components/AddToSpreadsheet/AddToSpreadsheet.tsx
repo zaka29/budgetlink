@@ -60,7 +60,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
     <form>
       <div>
         <LabelInput
-          label="Add expense"
+          label="Total groceries"
           name="addtototal"
           onChangeFn={setExpense}
           defaultValue={currentTotal}
@@ -72,7 +72,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
             disabled={loading}
             type="button"
             onClick={postData}
-            className="rounded h-[56px] bg-[#497236] hover:bg-[#4B952A] active:bg-[#4B952A] text-[#EDEDED] absolute bottom-20 left-6 right-6"
+            className="rounded h-[56px] bg-[#497236] hover:bg-[#4B952A] active:bg-[#4B952A] text-[#EDEDED] absolute bottom-40 left-6 right-6"
           >
             {loading ? "Adding" : "Add"} expense
           </button>
