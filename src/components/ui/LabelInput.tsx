@@ -26,7 +26,7 @@ export const LabelInput = ({
   return (
     <div className="relative">
       <div className="absolute right-[10px] top-[51px]">
-        <Spinner loading />
+        <Spinner loading={loading} />
       </div>
       <label htmlFor={name}>{label}</label>
       <div className="mt-4 mb-8 grid grid-cols-[112px_auto] gap-8">

@@ -18,7 +18,14 @@
   }
 }
 
+/*background: linear-gradient(180deg, rgba(59,54,111,1) 0%, rgba(29,33,64,1) 100%);*/
+
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(180deg, rgba(59,54,111,1) 0%, rgba(29,33,64,1) 100%);
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(29,33,64,1)
+    )
+  rgba(59,54,111,1);
 }
