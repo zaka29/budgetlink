@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSheets } from "@/app/page";
-import { revalidatePath } from "next/cache";
 
 export async function POST(request: NextRequest) {
   const range = `15jul-15Aug'23!M4`;
@@ -18,9 +17,12 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (e) {
-    return NextResponse.json({
-      message: `Error updating spread sheet: ${error}`,
-    });
+    return NextResponse.json(
+      {
+        message: `Error updating spread sheet: ${error}`,
+      },
+      { status: 400 },
+    );
   }
 
   return NextResponse.json({ message: "success" });

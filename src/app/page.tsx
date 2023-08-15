@@ -1,8 +1,7 @@
 import { google } from "googleapis";
 import { AddToSpreadsheet } from "@/components/AddToSpreadsheet";
 
-// export const dynamic = "force-dynamic";
-
+export const dynamic = "force-dynamic";
 export async function getSheets() {
   try {
     const auth = await google.auth.getClient({
@@ -31,6 +30,7 @@ export async function getExpenseTotal() {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
+    console.log("logging ", response);
     const result = await response.json();
     if (result.message.includes("Error")) {
       throw new Error(result.message);

@@ -1,6 +1,6 @@
 "use client";
 import { LabelInput } from "@/components/ui/LabelInput";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export const AddToSpreadsheet = ({ total }: { total?: string }) => {
