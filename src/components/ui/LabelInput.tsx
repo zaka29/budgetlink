@@ -26,7 +26,7 @@ export const LabelInput = ({
   return (
     <div className="relative">
       <div className="absolute right-[10px] top-[51px]">
-        <Spinner loading={loading} />
+        <Spinner loading />
       </div>
       <label htmlFor={name}>{label}</label>
       <div className="mt-4 mb-8 grid grid-cols-[112px_auto] gap-8">
@@ -35,7 +35,7 @@ export const LabelInput = ({
           autoComplete="none"
           type="text"
           disabled
-          className="rounded border border-[#090D29] bg-[#0F1231] text-[16px] w-full h-[56px] pl-6 pr-4 focus:outline-none"
+          className="rounded border border-[#5A5597] bg-[#38346A] text-[16px] text-white w-full h-[56px] pl-6 pr-4 focus:outline-none"
           value={`$ ${defaultValue}`}
         />
         <input
@@ -43,7 +43,7 @@ export const LabelInput = ({
           id={name}
           name={name}
           autoComplete="off"
-          className="rounded border border-[#2C305B] text-[16px] text-[7C7E96] bg-[#1A1E43] pl-6 pr-4 w-full h-[56px] focus:outline-none"
+          className="rounded border border-[#1E1E1E] bg-white text-[16px] text-[#434343] pl-6 pr-4 w-full h-[56px] focus:outline-none"
           disabled={loading}
           value={value}
         />

@@ -47,7 +47,7 @@ export default async function Page() {
 
   return (
     <main className="mx-auto max-w-7xl py-6 px-6 h-screen relative">
-      <div className="mb-16 p-5 bg-cyan-950 border rounded border-cyan-700 font-bold">
+      <div className="mb-16 p-5 font-antonio text-center text-4xl text-main-pink">
         BUDGETLINK
       </div>
       <div>
