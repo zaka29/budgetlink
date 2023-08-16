@@ -31,7 +31,10 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
 
   const postData = async () => {
     const path = "/api/sheets";
-    if (Number.isNaN(expense)) {
+    const t = total && total.length && total.replace("$", "");
+    const e = expense && expense.length && expense.replace("$", "");
+    console.log("t, e ", t, e);
+    if (Number.isNaN(t) || Number.isNaN(e)) {
       return;
     }
     setLoading(true);
@@ -39,7 +42,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
       const response = await fetch(path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: `=${total}+${expense}`,
+        body: `=${t}+${e}`,
       });
       const result = await response.json();
       if (result.message.includes("Error")) {
