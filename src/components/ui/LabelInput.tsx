@@ -60,16 +60,8 @@ export const LabelInput = ({
           disabled={loading}
           value={value}
           className="rounded border border-[#1E1E1E] bg-white text-[16px] text-[#434343] pl-6 pr-4 w-full h-[56px] focus:outline-none"
+          inputMode="decimal"
         />
-        {/*<input*/}
-        {/*  onChange={onInputChange}*/}
-        {/*  id={name}*/}
-        {/*  name={name}*/}
-        {/*  autoComplete="off"*/}
-        {/*  className="rounded border border-[#1E1E1E] bg-white text-[16px] text-[#434343] pl-6 pr-4 w-full h-[56px] focus:outline-none"*/}
-        {/*  disabled={loading}*/}
-        {/*  value={value}*/}
-        {/*/>*/}
       </div>
     </div>
   );
