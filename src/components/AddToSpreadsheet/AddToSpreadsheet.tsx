@@ -5,12 +5,37 @@ import { useRouter } from "next/navigation";
 import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
 
 interface State {
-  totalGroceries: string;
+  [key: string]: string | null;
 }
 
-enum Actions {
-  POST_EXPENSE = "POST_EXPENSES",
+enum ActionTypes {
+  POST_EXPENSES = "POST_EXPENSES",
+  UPDATE_EXPENSE_VALUE = "UPDATE_EXPENSE_VALUE",
 }
+
+type UpdateCellValueAction = {
+  type: ActionTypes.UPDATE_EXPENSE_VALUE;
+  payload: { name: string; value: string; current: string };
+};
+
+type PostExpensesAction = {
+  type: ActionTypes.POST_EXPENSES;
+  payload: string;
+};
+
+export type Actions = UpdateCellValueAction | PostExpensesAction;
+
+const reducer = (state: State, action: Actions) => {
+  const { type, payload } = action;
+  switch (type) {
+    case ActionTypes.POST_EXPENSES:
+      return { ...state };
+    case ActionTypes.UPDATE_EXPENSE_VALUE:
+      return { ...state, [payload.name]: payload.value };
+    default:
+      return state;
+  }
+};
 
 export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   const currentTotal = total || "0.00";
@@ -18,30 +43,16 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   const [expense, setExpense] = useState("0.00");
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [state, dispatch] = useReducer(reducer, { groceries: null });
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    const { value } = evt.target;
+    const { value, name } = evt.target;
     setExpense(value);
+    dispatch({
+      type: ActionTypes.UPDATE_EXPENSE_VALUE,
+      payload: { name, value },
+    });
   };
-
-  // const getExpenseTotal = async () => {
-  //   const base = "http://localhost:3000";
-  //   const path = "/api/sheets";
-  //   try {
-  //     const response = await fetch(path, {
-  //       method: "GET",
-  //       headers: { "Content-Type": "application/json" },
-  //     });
-  //     const result = await response.json();
-  //     console.log("result ", result);
-  //     if (result.message.includes("Error")) {
-  //       throw new Error(result.message);
-  //     }
-  //     return result;
-  //   } catch (e) {
-  //     throw new Error(`something did not work: ${e}`);
-  //   }
-  // };
 
   const postData = async () => {
     const path = "/api/sheets";
@@ -76,15 +87,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   return (
     <form>
       <div>
-        {/*<LabelInput*/}
-        {/*  label="Total groceries"*/}
-        {/*  name="addtototal"*/}
-        {/*  onChangeFn={handleChange}*/}
-        {/*  defaultValue={currentTotal}*/}
-        {/*  value={expense}*/}
-        {/*  loading={loading}*/}
-        {/*/>*/}
-        <Groceries onChangeFunc={handleChange} />
+        <Groceries dispatch={dispatch} onChangeFunc={handleChange} />
         <div className="mt-2">
           <button
             disabled={loading}

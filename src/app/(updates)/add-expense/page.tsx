@@ -42,7 +42,7 @@ export default function Page({
         <div>
           <LabelInput
             label="Add expense"
-            name="addtototal"
+            name="groceries"
             onChangeFn={() => ({})}
           />
           <div className="mt-2">

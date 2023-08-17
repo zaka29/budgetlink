@@ -1,12 +1,21 @@
 "use client";
 import { LabelInput } from "@/components/ui/LabelInput";
-import { ChangeEvent, useState, useEffect, useTransition } from "react";
+import {
+  ChangeEvent,
+  useState,
+  useEffect,
+  useTransition,
+  Dispatch,
+} from "react";
 import { useRouter } from "next/navigation";
+import { Actions } from "@/components/AddToSpreadsheet/AddToSpreadsheet";
 
 export const Groceries = ({
   onChangeFunc,
+  dispatch,
 }: {
   onChangeFunc: (evt: ChangeEvent<HTMLInputElement>) => void;
+  dispatch?: Dispatch<Actions>;
 }) => {
   // const currentTotal = total || "0.00";
   const [total, setTotal] = useState("0.00");
@@ -48,13 +57,14 @@ export const Groceries = ({
       const result = await getExpenseTotal();
       const { sheets } = result;
       setTotal(sheets.title);
+      dis;
     })();
   }, []);
 
   return (
     <LabelInput
       label="Total groceries 2"
-      name="addtototal"
+      name="groceries"
       onChangeFn={handleChange}
       defaultValue={total}
       value={expense}
