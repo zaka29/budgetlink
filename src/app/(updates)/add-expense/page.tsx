@@ -43,7 +43,7 @@ export default function Page({
           <LabelInput
             label="Add expense"
             name="addtototal"
-            onChangeFn={setExpense}
+            onChangeFn={() => ({})}
           />
           <div className="mt-2">
             <button
