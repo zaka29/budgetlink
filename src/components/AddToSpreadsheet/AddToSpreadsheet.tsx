@@ -5,25 +5,34 @@ import { useRouter } from "next/navigation";
 import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
 
 interface State {
-  [key: string]: string | null;
+  [key: string]: { total: string | null; expense: string | null };
 }
 
-enum ActionTypes {
+export enum ActionTypes {
   POST_EXPENSES = "POST_EXPENSES",
   UPDATE_EXPENSE_VALUE = "UPDATE_EXPENSE_VALUE",
+  UPDATE_EXPENSE_TOTAL = "UPDATE_EXPENSE_TOTAL",
 }
 
-type UpdateCellValueAction = {
+export type UpdateCellValueAction = {
   type: ActionTypes.UPDATE_EXPENSE_VALUE;
-  payload: { name: string; value: string; current: string };
+  payload: { name: string; expense: string };
 };
 
-type PostExpensesAction = {
+export type UpdateTotalAction = {
+  type: ActionTypes.UPDATE_EXPENSE_TOTAL;
+  payload: { name: string; total: string };
+};
+
+export type PostExpensesAction = {
   type: ActionTypes.POST_EXPENSES;
   payload: string;
 };
 
-export type Actions = UpdateCellValueAction | PostExpensesAction;
+export type Actions =
+  | UpdateCellValueAction
+  | UpdateTotalAction
+  | PostExpensesAction;
 
 const reducer = (state: State, action: Actions) => {
   const { type, payload } = action;
@@ -31,31 +40,42 @@ const reducer = (state: State, action: Actions) => {
     case ActionTypes.POST_EXPENSES:
       return { ...state };
     case ActionTypes.UPDATE_EXPENSE_VALUE:
-      return { ...state, [payload.name]: payload.value };
+      return {
+        ...state,
+        [payload.name]: { ...state[payload.name], expense: payload.expense },
+      };
+    case ActionTypes.UPDATE_EXPENSE_TOTAL:
+      return {
+        ...state,
+        [payload.name]: { ...state[payload.name], total: payload.total },
+      };
     default:
       return state;
   }
 };
 
-export const AddToSpreadsheet = ({ total }: { total?: string }) => {
-  const currentTotal = total || "0.00";
+export const AddToSpreadsheet = () => {
   const router = useRouter();
-  const [expense, setExpense] = useState("0.00");
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [state, dispatch] = useReducer(reducer, { groceries: null });
+  const [state, dispatch] = useReducer(reducer, {
+    groceries: { total: null, expense: null },
+  });
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = evt.target;
-    setExpense(value);
     dispatch({
       type: ActionTypes.UPDATE_EXPENSE_VALUE,
-      payload: { name, value },
+      payload: { name, expense: value },
     });
   };
 
   const postData = async () => {
     const path = "/api/sheets";
+    // just groceries for start
+    const {
+      groceries: { total, expense },
+    } = state;
     const t = total && total.length && total.replace("$", "");
     const e = expense && expense.length && expense.replace("$", "");
     console.log("t, e ", t, e);
@@ -77,7 +97,7 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
       throw new Error(`something did not work: ${e}`);
     } finally {
       setLoading(false);
-      setExpense("0.00");
+
       startTransition(() => {
         router.refresh();
       });
