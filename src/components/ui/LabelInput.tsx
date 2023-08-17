@@ -31,15 +31,14 @@ export const LabelInput = ({
   defaultValue?: string;
   value?: string;
   loading?: boolean;
-  onChangeFn: (event: string) => void;
+  onChangeFn: (event: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const currencyMask = createNumberMask({
     ...defaultMaskOptions,
   });
 
   const onInputChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    const { target } = evt;
-    onChangeFn(target.value);
+    onChangeFn(evt);
   };
 
   return (

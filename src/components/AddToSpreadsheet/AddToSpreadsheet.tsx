@@ -1,7 +1,16 @@
 "use client";
 import { LabelInput } from "@/components/ui/LabelInput";
-import { useState, useTransition } from "react";
+import { ChangeEvent, useState, useReducer, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
+
+interface State {
+  totalGroceries: string;
+}
+
+enum Actions {
+  POST_EXPENSE = "POST_EXPENSES",
+}
 
 export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   const currentTotal = total || "0.00";
@@ -10,24 +19,29 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   const [loading, setLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const getExpenseTotal = async () => {
-    const base = "http://localhost:3000";
-    const path = "/api/sheets";
-    try {
-      const response = await fetch(path, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      const result = await response.json();
-      console.log("result ", result);
-      if (result.message.includes("Error")) {
-        throw new Error(result.message);
-      }
-      return result;
-    } catch (e) {
-      throw new Error(`something did not work: ${e}`);
-    }
+  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
+    const { value } = evt.target;
+    setExpense(value);
   };
+
+  // const getExpenseTotal = async () => {
+  //   const base = "http://localhost:3000";
+  //   const path = "/api/sheets";
+  //   try {
+  //     const response = await fetch(path, {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+  //     const result = await response.json();
+  //     console.log("result ", result);
+  //     if (result.message.includes("Error")) {
+  //       throw new Error(result.message);
+  //     }
+  //     return result;
+  //   } catch (e) {
+  //     throw new Error(`something did not work: ${e}`);
+  //   }
+  // };
 
   const postData = async () => {
     const path = "/api/sheets";
@@ -62,14 +76,15 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
   return (
     <form>
       <div>
-        <LabelInput
-          label="Total groceries"
-          name="addtototal"
-          onChangeFn={setExpense}
-          defaultValue={currentTotal}
-          value={expense}
-          loading={loading}
-        />
+        {/*<LabelInput*/}
+        {/*  label="Total groceries"*/}
+        {/*  name="addtototal"*/}
+        {/*  onChangeFn={handleChange}*/}
+        {/*  defaultValue={currentTotal}*/}
+        {/*  value={expense}*/}
+        {/*  loading={loading}*/}
+        {/*/>*/}
+        <Groceries onChangeFunc={handleChange} />
         <div className="mt-2">
           <button
             disabled={loading}
