@@ -1,10 +1,11 @@
 "use client";
 import { LabelInput } from "@/components/ui/LabelInput";
-import { ChangeEvent, Dispatch, useEffect, useState } from "react";
+import { ChangeEvent, Dispatch, useEffect, useState, useRef } from "react";
 import {
   Actions,
   ActionTypes,
 } from "@/components/AddToSpreadsheet/AddToSpreadsheet";
+import { useGetCellValue } from "@/app/hooks";
 
 export const Groceries = ({
   onChangeFunc,
@@ -17,7 +18,8 @@ export const Groceries = ({
 }) => {
   const [displayTotal, setDisplayTotal] = useState("0.00");
   const [expense, setExpense] = useState("0.00");
-  const [loading, setLoading] = useState(false);
+
+  const { data, loading } = useGetCellValue(`15jul-15Aug'23!M4`);
   const { total } = groceries || {};
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -26,50 +28,27 @@ export const Groceries = ({
     onChangeFunc(evt);
   };
 
-  const getExpenseTotal = async (): Promise<{
-    message: string;
-    sheets: { title: string };
-  }> => {
-    const path = "/api/sheets";
-    setLoading(true);
-    try {
-      const response = await fetch(path, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      const result = await response.json();
-      if (result.message.includes("Error")) {
-        throw new Error(result.message);
-      }
-      return result;
-    } catch (e) {
-      throw new Error(`something did not work: ${e}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (total) {
       setDisplayTotal(total);
       setExpense("0.00");
-      return;
     }
+  }, [total]);
 
-    (async () => {
-      const result = await getExpenseTotal();
-      const { sheets } = result;
+  useEffect(() => {
+    if (data) {
+      const { sheets } = data;
       setDisplayTotal(sheets.title);
       dispatch({
         type: ActionTypes.UPDATE_EXPENSE_TOTAL,
         payload: { name: "groceries", total: sheets.title },
       });
-    })();
-  }, [total]);
+    }
+  }, [data]);
 
   return (
     <LabelInput
-      label="Total groceries 2"
+      label="Total groceries"
       name="groceries"
       onChangeFn={handleChange}
       defaultValue={displayTotal}

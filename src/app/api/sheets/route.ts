@@ -28,14 +28,15 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const range = `15jul-15Aug'23!M4`;
   let response = null;
+  const { searchParams } = new URL(request.url);
+  const range = searchParams.get("range");
   try {
     // Auth
     const sheets = await getSheets();
     response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range,
+      range: range || "",
     });
   } catch (e) {
     throw new Error(`could not fetch sheets: ${e}`);
