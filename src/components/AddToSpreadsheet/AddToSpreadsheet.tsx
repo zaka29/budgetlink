@@ -1,7 +1,7 @@
 "use client";
-import { LabelInput } from "@/components/ui/LabelInput";
 import { ChangeEvent, useState, useReducer, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Decimal from "decimal.js";
 import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
 
 interface State {
@@ -55,9 +55,7 @@ const reducer = (state: State, action: Actions) => {
 };
 
 export const AddToSpreadsheet = () => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const [state, dispatch] = useReducer(reducer, {
     groceries: { total: null, expense: null },
   });
@@ -71,15 +69,22 @@ export const AddToSpreadsheet = () => {
   };
 
   const postData = async () => {
+    // todo: will need to pass the name
     const path = "/api/sheets";
-    // just groceries for start
+    // just groceries for the start
+    // todo: move to hooks
     const {
       groceries: { total, expense },
     } = state;
     const t = total && total.length && total.replace("$", "");
     const e = expense && expense.length && expense.replace("$", "");
     console.log("t, e ", t, e);
-    if (Number.isNaN(t) || Number.isNaN(e)) {
+    if (
+      t === null ||
+      e === null ||
+      Number.isNaN(Number(t)) ||
+      Number.isNaN(Number(e))
+    ) {
       return;
     }
     setLoading(true);
@@ -93,21 +98,25 @@ export const AddToSpreadsheet = () => {
       if (result.message.includes("Error")) {
         throw new Error(result.message);
       }
+      dispatch({
+        type: ActionTypes.UPDATE_EXPENSE_TOTAL,
+        payload: { name: "groceries", total: `$${Decimal.add(t, e)}` },
+      });
     } catch (e) {
       throw new Error(`something did not work: ${e}`);
     } finally {
       setLoading(false);
-
-      startTransition(() => {
-        router.refresh();
-      });
     }
   };
 
   return (
     <form>
       <div>
-        <Groceries dispatch={dispatch} onChangeFunc={handleChange} />
+        <Groceries
+          groceries={state.groceries}
+          dispatch={dispatch}
+          onChangeFunc={handleChange}
+        />
         <div className="mt-2">
           <button
             disabled={loading}

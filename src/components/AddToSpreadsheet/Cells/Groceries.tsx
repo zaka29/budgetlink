@@ -9,14 +9,16 @@ import {
 export const Groceries = ({
   onChangeFunc,
   dispatch,
+  groceries,
 }: {
   onChangeFunc: (evt: ChangeEvent<HTMLInputElement>) => void;
   dispatch: Dispatch<Actions>;
+  groceries?: { total: string | null; expense: string | null };
 }) => {
-  // const currentTotal = total || "0.00";
-  const [total, setTotal] = useState("0.00");
+  const [displayTotal, setDisplayTotal] = useState("0.00");
   const [expense, setExpense] = useState("0.00");
   const [loading, setLoading] = useState(false);
+  const { total } = groceries || {};
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
     const { value } = evt.target;
@@ -36,7 +38,6 @@ export const Groceries = ({
         headers: { "Content-Type": "application/json" },
       });
       const result = await response.json();
-      console.log("getExpenseTotal result ", result);
       if (result.message.includes("Error")) {
         throw new Error(result.message);
       }
@@ -49,23 +50,29 @@ export const Groceries = ({
   };
 
   useEffect(() => {
+    if (total) {
+      setDisplayTotal(total);
+      setExpense("0.00");
+      return;
+    }
+
     (async () => {
       const result = await getExpenseTotal();
       const { sheets } = result;
-      setTotal(sheets.title);
+      setDisplayTotal(sheets.title);
       dispatch({
         type: ActionTypes.UPDATE_EXPENSE_TOTAL,
         payload: { name: "groceries", total: sheets.title },
       });
     })();
-  }, []);
+  }, [total]);
 
   return (
     <LabelInput
       label="Total groceries 2"
       name="groceries"
       onChangeFn={handleChange}
-      defaultValue={total}
+      defaultValue={displayTotal}
       value={expense}
       loading={loading}
     />

@@ -6,16 +6,17 @@ export async function POST(request: NextRequest) {
   let error = null;
 
   try {
-    const res = await request.text();
+    const value = await request.text();
     const sheets = await getSheets();
-    await sheets.spreadsheets.values.update({
+    const result = await sheets.spreadsheets.values.update({
       valueInputOption: "USER_ENTERED",
       spreadsheetId: process.env.SHEET_ID,
       range,
       requestBody: {
-        values: [[res]],
+        values: [[value]],
       },
     });
+    return NextResponse.json({ message: "success", data: result });
   } catch (e) {
     return NextResponse.json(
       {
@@ -24,8 +25,6 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
-
-  return NextResponse.json({ message: "success" });
 }
 
 export async function GET(request: NextRequest) {
