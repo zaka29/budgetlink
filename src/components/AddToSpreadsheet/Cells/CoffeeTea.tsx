@@ -6,7 +6,7 @@ import {
   ActionTypes,
 } from "@/components/AddToSpreadsheet/AddToSpreadsheet";
 import { useGetCellValue } from "@/app/hooks";
-import { CELLS } from "@/app/actions";
+import { Cells } from "@/components/AddToSpreadsheet/Cells/types";
 
 export const CoffeeTea = ({
   onChangeFunc,
@@ -20,7 +20,9 @@ export const CoffeeTea = ({
   const [displayTotal, setDisplayTotal] = useState("0.00");
   const [expense, setExpense] = useState("0.00");
 
-  const { data, loading } = useGetCellValue(CELLS.coffeetea);
+  const { data, loading } = useGetCellValue(
+    `${Cells.sheetId}${Cells.coffeetea}`,
+  );
   const { total } = coffeetea || {};
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {

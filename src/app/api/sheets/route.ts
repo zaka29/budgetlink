@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSheets } from "@/app/actions";
 
 export async function POST(request: NextRequest) {
-  const range = `15jul-15Aug'23!M4`;
   let error = null;
-
   try {
-    const value = await request.text();
+    const payload = await request.json();
+    const { range, values } = payload;
     const sheets = await getSheets();
     const result = await sheets.spreadsheets.values.update({
       valueInputOption: "USER_ENTERED",
       spreadsheetId: process.env.SHEET_ID,
       range,
       requestBody: {
-        values: [[value]],
+        majorDimension: "ROWS",
+        values: [...values],
       },
     });
     return NextResponse.json({ message: "success", data: result });

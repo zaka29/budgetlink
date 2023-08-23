@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Decimal from "decimal.js";
 import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
 import { CoffeeTea } from "@/components/AddToSpreadsheet/Cells/CoffeeTea";
+import { Cells } from "@/components/AddToSpreadsheet/Cells/types";
 
 interface State {
   [key: string]: { total: string | null; expense: string | null };
@@ -58,8 +59,8 @@ const reducer = (state: State, action: Actions) => {
 export const AddToSpreadsheet = () => {
   const [loading, setLoading] = useState(false);
   const [state, dispatch] = useReducer(reducer, {
-    groceries: { total: null, expense: null },
     coffeetea: { total: null, expense: null },
+    groceries: { total: null, expense: null },
   });
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -73,28 +74,52 @@ export const AddToSpreadsheet = () => {
   const postData = async () => {
     // todo: will need to pass the name
     const path = "/api/sheets";
+
+    // in progress //
+    // body
+    const cr = Object.keys(state)
+      .map((k) => Cells[k as keyof typeof Cells])
+      .join(":");
+    const values = Object.entries(state).map(([t, e]) => [
+      `=${e.total && e.total.replace("$", "")}+${
+        e.expense && e.expense.replace("$", "")
+      }`,
+    ]);
+
+    const payload = {
+      range: `${Cells.sheetId + cr}`,
+      values,
+    };
+
+    console.log("payload ", payload);
+
     // just groceries for the start
     // todo: move to hooks
-    const {
-      groceries: { total, expense },
-    } = state;
-    const t = total && total.length && total.replace("$", "");
-    const e = expense && expense.length && expense.replace("$", "");
-    console.log("t, e ", t, e);
-    if (
-      t === null ||
-      e === null ||
-      Number.isNaN(Number(t)) ||
-      Number.isNaN(Number(e))
-    ) {
-      return;
-    }
+    // const {
+    //   groceries: { total, expense },
+    // } = state;
+
+    // const t = total && total.length && total.replace("$", "");
+    // const e = expense && expense.length && expense.replace("$", "");
+
+    // console.log("t, e ", t, e);
+
+    // if (
+    //   t === null ||
+    //   e === null ||
+    //   Number.isNaN(Number(t)) ||
+    //   Number.isNaN(Number(e))
+    // ) {
+    //   return;
+    // }
+
     setLoading(true);
     try {
       const response = await fetch(path, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: `=${t}+${e}`,
+        // body: `=${t}+${e}`,
+        body: JSON.stringify(payload),
       });
       const result = await response.json();
       if (result.message.includes("Error")) {
@@ -102,7 +127,10 @@ export const AddToSpreadsheet = () => {
       }
       dispatch({
         type: ActionTypes.UPDATE_EXPENSE_TOTAL,
-        payload: { name: "groceries", total: `$${Decimal.add(t, e)}` },
+        payload: {
+          name: "groceries",
+          total: `$${Decimal.add("0.00", "7.77")}`,
+        },
       });
     } catch (e) {
       throw new Error(`something did not work: ${e}`);
