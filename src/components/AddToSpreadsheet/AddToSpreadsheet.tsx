@@ -1,40 +1,90 @@
 "use client";
-import { LabelInput } from "@/components/ui/LabelInput";
-import { useState, useTransition } from "react";
+import { ChangeEvent, useState, useReducer, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Decimal from "decimal.js";
+import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
 
-export const AddToSpreadsheet = ({ total }: { total?: string }) => {
-  const currentTotal = total || "0.00";
-  const router = useRouter();
-  const [expense, setExpense] = useState("0.00");
+interface State {
+  [key: string]: { total: string | null; expense: string | null };
+}
+
+export enum ActionTypes {
+  POST_EXPENSES = "POST_EXPENSES",
+  UPDATE_EXPENSE_VALUE = "UPDATE_EXPENSE_VALUE",
+  UPDATE_EXPENSE_TOTAL = "UPDATE_EXPENSE_TOTAL",
+}
+
+export type UpdateCellValueAction = {
+  type: ActionTypes.UPDATE_EXPENSE_VALUE;
+  payload: { name: string; expense: string };
+};
+
+export type UpdateTotalAction = {
+  type: ActionTypes.UPDATE_EXPENSE_TOTAL;
+  payload: { name: string; total: string };
+};
+
+export type PostExpensesAction = {
+  type: ActionTypes.POST_EXPENSES;
+  payload: string;
+};
+
+export type Actions =
+  | UpdateCellValueAction
+  | UpdateTotalAction
+  | PostExpensesAction;
+
+const reducer = (state: State, action: Actions) => {
+  const { type, payload } = action;
+  switch (type) {
+    case ActionTypes.POST_EXPENSES:
+      return { ...state };
+    case ActionTypes.UPDATE_EXPENSE_VALUE:
+      return {
+        ...state,
+        [payload.name]: { ...state[payload.name], expense: payload.expense },
+      };
+    case ActionTypes.UPDATE_EXPENSE_TOTAL:
+      return {
+        ...state,
+        [payload.name]: { ...state[payload.name], total: payload.total },
+      };
+    default:
+      return state;
+  }
+};
+
+export const AddToSpreadsheet = () => {
   const [loading, setLoading] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [state, dispatch] = useReducer(reducer, {
+    groceries: { total: null, expense: null },
+  });
 
-  const getExpenseTotal = async () => {
-    const base = "http://localhost:3000";
-    const path = "/api/sheets";
-    try {
-      const response = await fetch(path, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      const result = await response.json();
-      console.log("result ", result);
-      if (result.message.includes("Error")) {
-        throw new Error(result.message);
-      }
-      return result;
-    } catch (e) {
-      throw new Error(`something did not work: ${e}`);
-    }
+  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = evt.target;
+    dispatch({
+      type: ActionTypes.UPDATE_EXPENSE_VALUE,
+      payload: { name, expense: value },
+    });
   };
 
   const postData = async () => {
+    // todo: will need to pass the name
     const path = "/api/sheets";
+    // just groceries for the start
+    // todo: move to hooks
+    const {
+      groceries: { total, expense },
+    } = state;
     const t = total && total.length && total.replace("$", "");
     const e = expense && expense.length && expense.replace("$", "");
     console.log("t, e ", t, e);
-    if (Number.isNaN(t) || Number.isNaN(e)) {
+    if (
+      t === null ||
+      e === null ||
+      Number.isNaN(Number(t)) ||
+      Number.isNaN(Number(e))
+    ) {
       return;
     }
     setLoading(true);
@@ -48,27 +98,24 @@ export const AddToSpreadsheet = ({ total }: { total?: string }) => {
       if (result.message.includes("Error")) {
         throw new Error(result.message);
       }
+      dispatch({
+        type: ActionTypes.UPDATE_EXPENSE_TOTAL,
+        payload: { name: "groceries", total: `$${Decimal.add(t, e)}` },
+      });
     } catch (e) {
       throw new Error(`something did not work: ${e}`);
     } finally {
       setLoading(false);
-      setExpense("0.00");
-      startTransition(() => {
-        router.refresh();
-      });
     }
   };
 
   return (
     <form>
       <div>
-        <LabelInput
-          label="Total groceries"
-          name="addtototal"
-          onChangeFn={setExpense}
-          defaultValue={currentTotal}
-          value={expense}
-          loading={loading}
+        <Groceries
+          groceries={state.groceries}
+          dispatch={dispatch}
+          onChangeFunc={handleChange}
         />
         <div className="mt-2">
           <button

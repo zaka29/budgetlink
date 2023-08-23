@@ -1,21 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSheets } from "@/app/page";
+import { getSheets } from "@/app/actions";
 
 export async function POST(request: NextRequest) {
   const range = `15jul-15Aug'23!M4`;
   let error = null;
 
   try {
-    const res = await request.text();
+    const value = await request.text();
     const sheets = await getSheets();
-    await sheets.spreadsheets.values.update({
+    const result = await sheets.spreadsheets.values.update({
       valueInputOption: "USER_ENTERED",
       spreadsheetId: process.env.SHEET_ID,
       range,
       requestBody: {
-        values: [[res]],
+        values: [[value]],
       },
     });
+    return NextResponse.json({ message: "success", data: result });
   } catch (e) {
     return NextResponse.json(
       {
@@ -24,19 +25,18 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
-
-  return NextResponse.json({ message: "success" });
 }
 
 export async function GET(request: NextRequest) {
-  const range = `15jul-15Aug'23!M4`;
   let response = null;
+  const { searchParams } = new URL(request.url);
+  const range = searchParams.get("range");
   try {
     // Auth
     const sheets = await getSheets();
     response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.SHEET_ID,
-      range,
+      range: range || "",
     });
   } catch (e) {
     throw new Error(`could not fetch sheets: ${e}`);
