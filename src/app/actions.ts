@@ -2,7 +2,8 @@ import { google } from "googleapis";
 
 export async function getSheets() {
   try {
-    const key = process.env.KEY;
+    const key =
+      process.env.KEY && process.env.KEY.split(String.raw`\n`).join("\n");
     const auth = await google.auth.getClient({
       credentials: {
         type: "service_account",
