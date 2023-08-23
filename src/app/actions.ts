@@ -1,5 +1,10 @@
 import { google } from "googleapis";
 
+export const CELLS = {
+  groceries: "15jul-15Aug'23!M4",
+  coffeetea: "15jul-15Aug'23!M3",
+};
+
 export async function getSheets() {
   try {
     const key =

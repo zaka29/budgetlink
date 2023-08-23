@@ -3,6 +3,7 @@ import { ChangeEvent, useState, useReducer, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Decimal from "decimal.js";
 import { Groceries } from "@/components/AddToSpreadsheet/Cells/Groceries";
+import { CoffeeTea } from "@/components/AddToSpreadsheet/Cells/CoffeeTea";
 
 interface State {
   [key: string]: { total: string | null; expense: string | null };
@@ -58,6 +59,7 @@ export const AddToSpreadsheet = () => {
   const [loading, setLoading] = useState(false);
   const [state, dispatch] = useReducer(reducer, {
     groceries: { total: null, expense: null },
+    coffeetea: { total: null, expense: null },
   });
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +116,11 @@ export const AddToSpreadsheet = () => {
       <div>
         <Groceries
           groceries={state.groceries}
+          dispatch={dispatch}
+          onChangeFunc={handleChange}
+        />
+        <CoffeeTea
+          coffeetea={state.coffeetea}
           dispatch={dispatch}
           onChangeFunc={handleChange}
         />
