@@ -4,6 +4,11 @@ export type CellData = {
   sheets: { title: string };
 };
 
+export type Payload = {
+  range: string;
+  values: string[][];
+};
+
 export const useGetCellValue = (range?: string) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<CellData | null>(null);
@@ -53,4 +58,45 @@ export const useGetCellValue = (range?: string) => {
   }, [range]);
 
   return { data, loading, error };
+};
+
+export const usePostCellData = (payload?: Payload) => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<CellData | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  const cancel = useRef(false);
+
+  const runPost = async () => {
+    // todo: will need to pass the name
+    const path = "/api/sheets";
+
+    setLoading(true);
+    try {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (result.message.includes("Error")) {
+        throw new Error(result.message);
+      }
+      if (!cancel) {
+        setData(result);
+      }
+    } catch (e) {
+      throw new Error(`something did not work: ${e}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      cancel.current = true;
+    };
+  }, []);
+
+  return { data, loading, error, runPost };
 };
