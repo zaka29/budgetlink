@@ -1,5 +1,5 @@
 export enum Cells {
-  sheetId = "15jul-15Aug'23!",
-  coffeetea = "M3",
-  groceries = "M4",
+  sheetId = "15Aug-15Sept'23!",
+  coffeetea = "L3",
+  groceries = "L4",
 }
